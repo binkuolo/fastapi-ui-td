@@ -50,9 +50,16 @@
 
     <!-- 手机号登陆 -->
     <template v-else>
+      <t-form-item name="phone">
+        <t-input v-model="formData.phone" size="large" placeholder="请输入您的手机号">
+          <template #prefix-icon>
+            <t-icon name="user" />
+          </template>
+        </t-input>
+      </t-form-item>
       <t-form-item class="verification-code" name="verifyCode">
         <t-input v-model="formData.verifyCode" size="large" placeholder="请输入验证码" />
-        <t-button variant="outline" :disabled="countDown > 0" @click="handleCounter">
+        <t-button variant="outline" :disabled="countDown > 0 || !check.test(formData.phone)" @click="sedVerifyCode">
           {{ countDown == 0 ? '发送验证码' : `${countDown}秒后可重发` }}
         </t-button>
       </t-form-item>
@@ -83,13 +90,16 @@ const userStore = useUserStore();
 const INITIAL_DATA = {
   phone: '',
   account: 'admin',
-  password: 'admin',
+  password: '123456',
   verifyCode: '',
   checked: false,
 };
 
 const FORM_RULES = {
-  phone: [{ required: true, message: '手机号必填', type: 'error' }],
+  phone: [
+    { required: true, message: '手机号必填', type: 'error' },
+    { telnumber: true, message: '请填入正确的手机号', type: 'error' },
+  ],
   account: [{ required: true, message: '账号必填', type: 'error' }],
   password: [{ required: true, message: '密码必填', type: 'error' }],
   verifyCode: [{ required: true, message: '验证码必填', type: 'error' }],
@@ -100,19 +110,27 @@ const type = ref('password');
 const formData = ref({ ...INITIAL_DATA });
 const showPsw = ref(false);
 
+const check = ref(/^1[3456789][0-9]{9}$/);
+
 const [countDown, handleCounter] = useCounter();
 
 const switchType = (val: string) => {
   type.value = val;
 };
 
+// 发送验证码
+const sedVerifyCode = () => {
+  console.log('phone', formData.value.phone);
+  handleCounter();
+};
+
 const router = useRouter();
 
+// 登陆
 const onSubmit = async ({ validateResult }) => {
   if (validateResult === true) {
     try {
       await userStore.login(formData.value);
-
       MessagePlugin.success('登陆成功');
       router.push({
         path: '/dashboard/base',

@@ -1,7 +1,7 @@
 export default {
   development: {
     // 开发环境接口请求
-    host: 'https://service-exndqyuk-1257786608.gz.apigw.tencentcs.com',
+    host: 'http://192.168.3.101:9000',
     // 开发环境 cdn 路径
     cdn: '',
   },

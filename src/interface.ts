@@ -4,6 +4,7 @@ import STYLE_CONFIG from '@/config/style';
 export interface ResDataType {
   code: number;
   data: any;
+  message: string;
 }
 
 export interface MenuRoute {
